@@ -81,7 +81,7 @@ Response `201 Created`:
 
 ```json
 {
-  "refundId": "ref_1c9e02ab",
+  "refundCustomerId": "ref_1c9e02ab",
   "paymentId": "pay_8f2a91c4",
   "status": "processing"
 }
