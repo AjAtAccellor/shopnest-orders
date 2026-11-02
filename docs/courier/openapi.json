@@ -1,0 +1,78 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "SwiftCourier Shipping API",
+    "version": "2.1.0",
+    "description": "Internal shipping and tracking service owned by the logistics team.",
+    "contact": { "name": "logistics-team" }
+  },
+  "servers": [{ "url": "https://courier.internal.shopnest.dev/v2" }],
+  "components": {
+    "securitySchemes": {
+      "ClientId": { "type": "apiKey", "in": "header", "name": "X-Client-Id" }
+    },
+    "schemas": {
+      "Address": {
+        "type": "object",
+        "required": ["line1", "city", "pincode"],
+        "properties": {
+          "line1": { "type": "string" },
+          "city": { "type": "string" },
+          "pincode": { "type": "string" }
+        }
+      },
+      "CreateShipmentRequest": {
+        "type": "object",
+        "required": ["referenceId", "address"],
+        "properties": {
+          "referenceId": { "type": "string", "description": "Caller's order id" },
+          "address": { "$ref": "#/components/schemas/Address" },
+          "weightKg": { "type": "number" }
+        }
+      },
+      "Shipment": {
+        "type": "object",
+        "properties": {
+          "shipmentId": { "type": "string" },
+          "awb": { "type": "string", "description": "Air waybill number" },
+          "eta": { "type": "string", "format": "date" }
+        }
+      },
+      "Tracking": {
+        "type": "object",
+        "properties": {
+          "shipmentId": { "type": "string" },
+          "status": { "type": "string", "enum": ["created", "in_transit", "out_for_delivery", "delivered", "returned"] },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "at": { "type": "string", "format": "date-time" },
+                "location": { "type": "string" },
+                "note": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [{ "ClientId": [] }],
+  "paths": {
+    "/shipments": {
+      "post": {
+        "summary": "Create a shipment",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateShipmentRequest" } } } },
+        "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Shipment" } } } } }
+      }
+    },
+    "/shipments/{shipmentId}/tracking": {
+      "get": {
+        "summary": "Get tracking events for a shipment",
+        "parameters": [{ "name": "shipmentId", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Tracking" } } } } }
+      }
+    }
+  }
+}

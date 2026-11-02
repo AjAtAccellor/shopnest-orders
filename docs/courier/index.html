@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SwiftCourier API Docs</title>
+  <meta name="api-version" content="2.1.0">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main>
+  <p class="crumb"><a href="../">ShopNest internal APIs</a> / SwiftCourier</p>
+  <h1>SwiftCourier Shipping API <span class="ver">v2.1.0</span></h1>
+  <p>Internal shipping and tracking service owned by <strong>logistics-team</strong>.
+     Machine-readable spec: <a href="openapi.json">openapi.json</a></p>
+
+  <h2>Base URL &amp; auth</h2>
+  <pre>https://courier.internal.shopnest.dev/v2
+Header: X-Client-Id: &lt;your client id&gt;</pre>
+
+  <h2 id="create-shipment"><span class="m post">POST</span> /shipments</h2>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Required</th><th>Notes</th></tr>
+    <tr><td>referenceId</td><td>string</td><td>yes</td><td>Caller's order id</td></tr>
+    <tr><td>address.line1</td><td>string</td><td>yes</td><td></td></tr>
+    <tr><td>address.city</td><td>string</td><td>yes</td><td></td></tr>
+    <tr><td>address.pincode</td><td>string</td><td>yes</td><td></td></tr>
+    <tr><td>weightKg</td><td>number</td><td>no</td><td></td></tr>
+  </table>
+  <p>Response <code>201</code>: <code>{ shipmentId, awb, eta }</code></p>
+
+  <h2 id="tracking"><span class="m get">GET</span> /shipments/{shipmentId}/tracking</h2>
+  <p>Response <code>200</code>: <code>{ shipmentId, status, events: [{ at, location, note }] }</code><br>
+     <code>status</code>: created | in_transit | out_for_delivery | delivered | returned</p>
+
+  <h2>Changelog</h2>
+  <ul>
+    <li><strong>2.1.0</strong> — Added <code>returned</code> tracking status.</li>
+    <li><strong>2.0.0</strong> — Moved to <code>/v2</code>; <code>orderId</code> renamed to <code>referenceId</code>.</li>
+  </ul>
+</main>
+</body>
+</html>

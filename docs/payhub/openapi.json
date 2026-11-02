@@ -1,0 +1,86 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PayHub Payments API",
+    "version": "1.4.0",
+    "description": "Internal payments service owned by the payments-platform team.",
+    "contact": { "name": "payments-platform-team" }
+  },
+  "servers": [{ "url": "https://payhub.internal.shopnest.dev/api/v1" }],
+  "components": {
+    "securitySchemes": {
+      "PayHubKey": { "type": "apiKey", "in": "header", "name": "X-PayHub-Key" }
+    },
+    "schemas": {
+      "CreatePaymentRequest": {
+        "type": "object",
+        "required": ["orderId", "amount"],
+        "properties": {
+          "orderId": { "type": "string" },
+          "amount": { "type": "number", "description": "Decimal amount in major units, e.g. 499.99" },
+          "currency": { "type": "string", "default": "INR", "enum": ["INR", "USD"] },
+          "customerEmail": { "type": "string", "format": "email" }
+        }
+      },
+      "Payment": {
+        "type": "object",
+        "properties": {
+          "paymentId": { "type": "string" },
+          "orderId": { "type": "string" },
+          "amount": { "type": "number" },
+          "currency": { "type": "string" },
+          "status": { "type": "string", "enum": ["pending", "authorized", "captured", "failed"] },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "RefundRequest": {
+        "type": "object",
+        "required": ["paymentId", "amount"],
+        "properties": {
+          "paymentId": { "type": "string" },
+          "amount": { "type": "number" },
+          "reason": { "type": "string" }
+        }
+      },
+      "Refund": {
+        "type": "object",
+        "properties": {
+          "refundId": { "type": "string" },
+          "paymentId": { "type": "string" },
+          "status": { "type": "string", "enum": ["processing", "completed", "failed"] }
+        }
+      }
+    }
+  },
+  "security": [{ "PayHubKey": [] }],
+  "paths": {
+    "/payments": {
+      "post": {
+        "summary": "Create a payment",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatePaymentRequest" } } } },
+        "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Payment" } } } } }
+      }
+    },
+    "/payments/{paymentId}": {
+      "get": {
+        "summary": "Get a payment",
+        "parameters": [{ "name": "paymentId", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Payment" } } } } }
+      }
+    },
+    "/payments/{paymentId}/capture": {
+      "post": {
+        "summary": "Capture an authorized payment",
+        "parameters": [{ "name": "paymentId", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Payment" } } } } }
+      }
+    },
+    "/refunds": {
+      "post": {
+        "summary": "Refund a captured payment",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RefundRequest" } } } },
+        "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Refund" } } } } }
+      }
+    }
+  }
+}

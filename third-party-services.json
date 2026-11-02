@@ -1,0 +1,27 @@
+{
+  "$comment": "Registry of internal/third-party services this repo depends on. Codebase Pilot can read this to know which docs to track.",
+  "services": [
+    {
+      "name": "PayHub",
+      "type": "internal-http-api",
+      "owner": "payments-platform-team",
+      "purpose": "Create and capture payments, issue refunds",
+      "baseUrlEnv": "PAYHUB_BASE_URL",
+      "apiVersionInUse": "v1",
+      "docsUrl": "https://anujchaudhary00.github.io/shopnest-orders/payhub/",
+      "specUrl": "https://anujchaudhary00.github.io/shopnest-orders/payhub/openapi.json",
+      "client": "src/services/payhubClient.js"
+    },
+    {
+      "name": "SwiftCourier",
+      "type": "internal-http-api",
+      "owner": "logistics-team",
+      "purpose": "Create shipments and fetch tracking status",
+      "baseUrlEnv": "COURIER_BASE_URL",
+      "apiVersionInUse": "v2",
+      "docsUrl": "https://anujchaudhary00.github.io/shopnest-orders/courier/",
+      "specUrl": "https://anujchaudhary00.github.io/shopnest-orders/courier/openapi.json",
+      "client": "src/services/courierClient.js"
+    }
+  ]
+}

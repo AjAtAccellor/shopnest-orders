@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PayHub API Docs</title>
+  <meta name="api-version" content="1.4.0">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main>
+  <p class="crumb"><a href="../">ShopNest internal APIs</a> / PayHub</p>
+  <h1>PayHub Payments API <span class="ver">v1.4.0</span></h1>
+  <p>Internal payments service owned by <strong>payments-platform-team</strong>.
+     Machine-readable spec: <a href="openapi.json">openapi.json</a></p>
+
+  <h2>Base URL &amp; auth</h2>
+  <pre>https://payhub.internal.shopnest.dev/api/v1
+Header: X-PayHub-Key: &lt;your key&gt;</pre>
+
+  <h2 id="create-payment"><span class="m post">POST</span> /payments</h2>
+  <p>Create a payment for an order.</p>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Required</th><th>Notes</th></tr>
+    <tr><td>orderId</td><td>string</td><td>yes</td><td></td></tr>
+    <tr><td>amount</td><td>number</td><td>yes</td><td>Decimal in major units, e.g. 499.99</td></tr>
+    <tr><td>currency</td><td>string</td><td>no</td><td>INR (default) or USD</td></tr>
+    <tr><td>customerEmail</td><td>string</td><td>no</td><td></td></tr>
+  </table>
+  <p>Response <code>201</code>: <code>{ paymentId, orderId, amount, currency, status, createdAt }</code><br>
+     <code>status</code>: pending | authorized | captured | failed</p>
+
+  <h2 id="get-payment"><span class="m get">GET</span> /payments/{paymentId}</h2>
+  <p>Fetch a payment. Response <code>200</code>: Payment object.</p>
+
+  <h2 id="capture"><span class="m post">POST</span> /payments/{paymentId}/capture</h2>
+  <p>Capture an authorized payment. Response <code>200</code>: Payment with <code>status: "captured"</code>.</p>
+
+  <h2 id="refunds"><span class="m post">POST</span> /refunds</h2>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Required</th><th>Notes</th></tr>
+    <tr><td>paymentId</td><td>string</td><td>yes</td><td></td></tr>
+    <tr><td>amount</td><td>number</td><td>yes</td><td>Decimal in major units</td></tr>
+    <tr><td>reason</td><td>string</td><td>no</td><td></td></tr>
+  </table>
+  <p>Response <code>201</code>: <code>{ refundId, paymentId, status }</code> — status: processing | completed | failed</p>
+
+  <h2>Changelog</h2>
+  <ul>
+    <li><strong>1.4.0</strong> — Added USD currency support.</li>
+    <li><strong>1.3.0</strong> — Added <code>GET /payments/{paymentId}</code>.</li>
+  </ul>
+</main>
+</body>
+</html>
